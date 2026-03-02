@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "YourStrong@Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./AuthMicroservice/Dockerfile
+    ports:
+      - "5001:8080"
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true
+    depends_on:
+      - sqlserver
+
+  product-service:
+    build:
+      context: .
+      dockerfile: ./ProductMicroservice/Dockerfile
+    ports:
+      - "5002:8080"
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ProductDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true
+    depends_on:
+      - sqlserver
+      - auth-service
+
+  order-service:
+    build:
+      context: .
+      dockerfile: ./OrderMicroservice/Dockerfile
+    ports:
+      - "5003:8080"
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true
+      - ServiceUrls__ProductService=http://product-service:8080
+    depends_on:
+      - sqlserver
+      - product-service
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./ApiGateway/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - auth-service
+      - product-service
+      - order-service
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-gateway
+
+volumes:
+  sqlserver_data:
