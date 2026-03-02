@@ -16,4 +16,7 @@ RUN dotnet publish "OrderMicroservice/OrderMicroservice.csproj" -c Release -o /a
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY appsettings.shared.json ./
+COPY appsettings.shared.Development.json ./
+COPY appsettings.shared.Production.json ./
 ENTRYPOINT ["dotnet", "OrderMicroservice.dll"]

@@ -16,4 +16,7 @@ RUN dotnet publish "AuthMicroservice/AuthMicroservice.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY appsettings.shared.json ./
+COPY appsettings.shared.Development.json ./
+COPY appsettings.shared.Production.json ./
 ENTRYPOINT ["dotnet", "AuthMicroservice.dll"]

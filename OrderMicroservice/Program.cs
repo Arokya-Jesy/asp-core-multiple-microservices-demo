@@ -11,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
 XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
-builder.Configuration.AddJsonFile("../appsettings.shared.json", optional: true, reloadOnChange: true);
-builder.Configuration.AddJsonFile($"../appsettings.shared.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.shared.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile($"appsettings.shared.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<OrderDbContext>(options =>

@@ -17,8 +17,8 @@ XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 // 2. Environment-specific JSON (e.g., appsettings.shared.Production.json)
 // 3. Base JSON file (lowest priority - defaults)
 
-builder.Configuration.AddJsonFile("../appsettings.shared.json", optional: true, reloadOnChange: true);
-builder.Configuration.AddJsonFile($"../appsettings.shared.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("appsettings.shared.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile($"appsettings.shared.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddEnvironmentVariables();
 
 // Add services
